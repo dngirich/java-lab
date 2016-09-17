@@ -9,3 +9,4 @@
 /.gradle
 /.nb-gradle
 nb-configuration.xml
+/build/
