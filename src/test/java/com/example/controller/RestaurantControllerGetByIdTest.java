@@ -38,12 +38,8 @@ public class RestaurantControllerGetByIdTest {
         restaurant.setWorkTime(new Restaurant.WorkTime("10AM", "3PM"));
         restaurant.setHalls(Arrays.asList("Banket Hall", "Smoking Hall"));
 
-        String restaurantJSON = TestUtil.toJson(restaurant);
-
         when(restaurantService.findOne(restaurant.getId())).thenReturn(restaurant);
-        this.mockMvc.perform(get("/restaurants/" + restaurant.getId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(restaurantJSON))
+        this.mockMvc.perform(get("/restaurants/" + restaurant.getId()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.name", is(restaurant.getName())))

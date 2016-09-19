@@ -40,12 +40,9 @@ public class RestaurantControllerGetAllTest {
         restaurant.setHalls(Arrays.asList("Banket Hall", "Smoking Hall"));
 
         List<Restaurant> restaurants = Arrays.asList(restaurant);
-        String restaurantsJSON = TestUtil.toJson(restaurants);
 
         when(restaurantService.findAll()).thenReturn(restaurants);
-        this.mockMvc.perform(get("/restaurants")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(restaurantsJSON))
+        this.mockMvc.perform(get("/restaurants"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name", is(restaurant.getName())))
                 .andExpect(jsonPath("$[0].halls", hasSize(restaurant.getHalls().size())))
