@@ -1,6 +1,11 @@
 package com.example.controller;
 
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import com.example.domain.Restaurant;
+import com.example.service.EntityNotFoundException;
 import com.example.service.RestaurantService;
 import java.util.Arrays;
 import org.junit.Test;
@@ -15,11 +20,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(RestaurantController.class)
-public class RestaurantControllerCreateTest {
+public class RestaurantControllerGetByIdTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -28,60 +33,39 @@ public class RestaurantControllerCreateTest {
     private RestaurantService restaurantService;
 
     @Test
-    public void create_NewRestaurant_ShouldCreateRestaurantAndReturnCreatedRestaurant() throws Exception {
+    public void get_ByIdRestaurant_ShouldReturnByIdRestaurant() throws Exception {
         Restaurant restaurant = new Restaurant(1, "Pizza");
         restaurant.setWorkTime(new Restaurant.WorkTime("10AM", "3PM"));
         restaurant.setHalls(Arrays.asList("Banket Hall", "Smoking Hall"));
-        String restaurantJSON = TestUtil.toJson(restaurant);
-        when(restaurantService.save(any(Restaurant.class))).thenReturn(restaurant);
 
-        this.mockMvc.perform(post("/restaurants")
+        String restaurantJSON = TestUtil.toJson(restaurant);
+
+        when(restaurantService.findOne(restaurant.getId())).thenReturn(restaurant);
+        this.mockMvc.perform(get("/restaurants/" + restaurant.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(restaurantJSON))
-                .andExpect(status().isCreated())
+                .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.name", is(restaurant.getName())))
                 .andExpect(jsonPath("$.halls", hasSize(restaurant.getHalls().size())))
                 .andExpect(jsonPath("$.workTime.start", is(restaurant.getWorkTime().getStart())))
                 .andExpect(jsonPath("$.workTime.end", is(restaurant.getWorkTime().getEnd())));
-
-        verify(restaurantService, times(1)).save(any(Restaurant.class));
+        verify(restaurantService, times(1)).findOne(restaurant.getId());
         verifyNoMoreInteractions(restaurantService);
     }
 
     @Test
-    public void create_EmptyRestaurant_ShouldReturnErrorResponseStatusCode() throws Exception {
-        String restaurantJSON = "";
-
-        this.mockMvc.perform(post("/restaurants")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(restaurantJSON))
-                .andExpect(status().isBadRequest());
-        verifyNoMoreInteractions(restaurantService);
-    }
-
-    @Test
-    public void create_InvalidRestaurant_ShouldReturnErrorResponseStatusCode() throws Exception {
-        String restaurantJSON = "invalid";
-
-        this.mockMvc.perform(post("/restaurants")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(restaurantJSON))
-                .andExpect(status().isBadRequest());
-
-        verifyNoMoreInteractions(restaurantService);
-    }
-
-    @Test
-    public void create_RestaurantWithoutName_ShouldReturnErrorResponseStatusCode() throws Exception {
-        Restaurant restaurant = new Restaurant(1, "");
+    public void get_ByNonExistentIdRestaurant_ShouldReturnErrorResponseStatusCode() throws Exception {
+        Restaurant restaurant = new Restaurant(1, "Pizza");
         String restaurantJSON = TestUtil.toJson(restaurant);
 
-        this.mockMvc.perform(post("/restaurants")
+        when(restaurantService.findOne(restaurant.getId())).thenThrow(EntityNotFoundException.class);
+        this.mockMvc.perform(get("/restaurants/" + restaurant.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(restaurantJSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
 
+        verify(restaurantService, times(1)).findOne(restaurant.getId());
         verifyNoMoreInteractions(restaurantService);
     }
 

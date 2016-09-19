@@ -15,6 +15,5 @@ public interface RestaurantService {
 
     public Restaurant update(Long id, Restaurant restaurant);
 
-
     public Restaurant updatePatch(Long id, Restaurant restaurant);
 }

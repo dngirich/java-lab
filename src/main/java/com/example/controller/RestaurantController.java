@@ -1,4 +1,3 @@
-
 package com.example.controller;
 
 import com.example.domain.Restaurant;
@@ -19,38 +18,51 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/restaurants")
 public class RestaurantController {
-   @Autowired
-    private RestaurantService restaurantService;
-   
-    
-   @RequestMapping(method=RequestMethod.GET)
-  public List<Restaurant> getAll() {
-    return restaurantService.findAll();
-  }
-  
-  @RequestMapping(method=RequestMethod.POST)
-  @ResponseStatus(HttpStatus.CREATED)
-  public Restaurant create(@RequestBody @Valid Restaurant restaurant, BindingResult bindingResult) throws BindException {
-      if (bindingResult.hasErrors()) {
-          throw new BindException(bindingResult);          
-      }
-      
-      return restaurantService.save(restaurant);
-  }
-  
-  @RequestMapping(method=RequestMethod.DELETE, value="{id}")
-  public void delete(@PathVariable Long id) {
-    restaurantService.delete(id);
-  }
-  
-  @RequestMapping(method=RequestMethod.PUT, value="{id}")
-  public Restaurant update(@PathVariable Long id, @RequestBody Restaurant restaurant) {
-        return restaurantService.update(id, restaurant);
-  }
 
-  @RequestMapping(method=RequestMethod.PATCH, value="{id}")
-  public Restaurant patch(@PathVariable Long id, @RequestBody Restaurant restaurant) {
+    @Autowired
+    private RestaurantService restaurantService;
+
+    @RequestMapping(method = RequestMethod.GET)
+    public List<Restaurant> getAll() {
+        return restaurantService.findAll();
+    }
+
+    @RequestMapping(value = "{id}", method = RequestMethod.GET)
+    public Restaurant getById(@PathVariable Long id) {
+        return restaurantService.findOne(id);
+    }
+
+    @RequestMapping(method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.CREATED)
+    public Restaurant create(@RequestBody @Valid Restaurant restaurant,
+            BindingResult bindingResult) throws BindException {
+
+        if (bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
+        }
+        return restaurantService.save(restaurant);
+    }
+
+    @RequestMapping(method = RequestMethod.DELETE, value = "{id}")
+    public void delete(@PathVariable Long id) {
+        restaurantService.delete(id);
+    }
+
+    @RequestMapping(method = RequestMethod.PUT, value = "{id}")
+    public Restaurant update(@PathVariable Long id, @RequestBody
+            @Valid Restaurant restaurant, BindingResult bindingResult) throws BindException {
+
+        if (bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
+        }
+        return restaurantService.update(id, restaurant);
+    }
+
+    @RequestMapping(method = RequestMethod.PATCH, value = "{id}")
+    public Restaurant updatePatch(@PathVariable Long id,
+            @RequestBody Restaurant restaurant) {
+
         return restaurantService.updatePatch(id, restaurant);
-  }
-    
+    }
+
 }

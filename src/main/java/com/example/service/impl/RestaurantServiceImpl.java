@@ -16,7 +16,13 @@ class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public List<Restaurant> findAll() {
-        return new ArrayList<>(map.values());
+
+        ArrayList<Restaurant> existingRestaurants = new ArrayList<>(map.values());
+        if (!existingRestaurants.isEmpty()) {
+            return new ArrayList<>(map.values());
+        } else {
+            throw new EntityNotFoundException("Can't find non-existent restaurants.");
+        }
     }
 
     @Override
@@ -27,12 +33,22 @@ class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public void delete(Long id) {
-        map.remove(id);
+        Restaurant existingRestaurant = map.get(id);
+        if (existingRestaurant != null) {
+            map.remove(id);
+        } else {
+            throw new EntityNotFoundException("Can't delete non-existent restaurant.");
+        }
     }
 
     @Override
     public Restaurant findOne(Long id) {
-        return map.get(id);
+        Restaurant existingRestaurant = map.get(id);
+        if (existingRestaurant != null) {
+            return map.get(id);
+        } else {
+            throw new EntityNotFoundException("Can't find non-existent restaurant.");
+        }
     }
 
     @Override
@@ -40,22 +56,28 @@ class RestaurantServiceImpl implements RestaurantService {
         Restaurant existingRestaurant = map.get(id);
         if (existingRestaurant != null) {
             return map.put(id, restaurant);
+        } else {
+            throw new EntityNotFoundException("Can't update non-existent restaurant.");
         }
-        throw new EntityNotFoundException("Can't update non-existent restaurant.");
     }
 
     @Override
     public Restaurant updatePatch(Long id, Restaurant restaurant) {
         Restaurant existingRestaurant = map.get(id);
-        
+
         if (existingRestaurant != null) {
             if (restaurant.getName() != null) {
                 existingRestaurant.setName(restaurant.getName());
             }
-            
+            if (restaurant.getHalls() != null) {
+                existingRestaurant.setHalls(restaurant.getHalls());
+            }
+            if (restaurant.getWorkTime() != null) {
+                existingRestaurant.setWorkTime(restaurant.getWorkTime());
+            }
             return existingRestaurant;
+        } else {
+            throw new EntityNotFoundException("Can't update non-existent restaurant.");
         }
-        return null;
-    }        
-
+    }
 }

@@ -2,7 +2,6 @@ package com.example.domain;
 
 import java.io.Serializable;
 import java.util.List;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -16,13 +15,13 @@ public class Restaurant implements Serializable {
     @NotEmpty
     @Length(max = 10)
     private String name;
-    
+
     @NotNull
     private WorkTime workTime;
-    
+
     @NotNull
     private List<String> halls;
-            
+
     public Restaurant() {
     }
 
@@ -62,11 +61,11 @@ public class Restaurant implements Serializable {
     public void setHalls(List<String> halls) {
         this.halls = halls;
     }
-    
+
     public static class WorkTime {
-        
+
         private String start;
-        
+
         private String end;
 
         public WorkTime() {
@@ -83,6 +82,6 @@ public class Restaurant implements Serializable {
 
         public String getEnd() {
             return end;
-        }                
+        }
     }
 }
