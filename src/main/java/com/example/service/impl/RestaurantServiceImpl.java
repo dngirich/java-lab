@@ -16,13 +16,7 @@ class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public List<Restaurant> findAll() {
-
-        ArrayList<Restaurant> existingRestaurants = new ArrayList<>(map.values());
-        if (!existingRestaurants.isEmpty()) {
-            return new ArrayList<>(map.values());
-        } else {
-            throw new EntityNotFoundException("Can't find non-existent restaurants.");
-        }
+        return new ArrayList<>(map.values());
     }
 
     @Override

@@ -57,11 +57,11 @@ public class RestaurantControllerGetAllTest {
         Restaurant restaurant = null;
         String restaurantJSON = TestUtil.toJson(restaurant);
 
-        when(restaurantService.findAll()).thenThrow(EntityNotFoundException.class);
+        when(restaurantService.findAll()).thenReturn(null);
         this.mockMvc.perform(get("/restaurants/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(restaurantJSON))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk());
 
         verify(restaurantService, times(1)).findAll();
         verifyNoMoreInteractions(restaurantService);
